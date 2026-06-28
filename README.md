@@ -19,12 +19,7 @@ Requires Python 3.11+.
 ```python
 import asyncio
 
-from aqi_in_api import (
-    AQIClient,
-    GetHistoryParams,
-    GetLocationBySlugParams,
-    GetNearestLocationParams,
-)
+from aqi_in_api import AQIClient
 
 
 async def main() -> None:
@@ -34,22 +29,16 @@ async def main() -> None:
     print(f"Location: {ip_details.city}, {ip_details.country}")
 
     nearest = await client.get_nearest_location(
-        GetNearestLocationParams(lat=ip_details.lat, long=ip_details.lon)
+        lat=ip_details.lat, long=ip_details.lon,
     )
     station = nearest[0]
     print(f"Nearest station: {station.station} ({station.location_slug})")
 
-    location = await client.get_location_by_slug(
-        GetLocationBySlugParams(slug=station.location_slug)
-    )
+    location = await client.get_location_by_slug(slug=station.location_slug)
     print(f"Location AQI: {location[0].iaqi}")
 
     history = await client.get_last_24_hour_history(
-        GetHistoryParams(
-            slug=station.location_slug,
-            sensorname="pm25",
-            slugType="locationId",
-        )
+        slug=station.location_slug, sensorname="pm25", slug_type="locationId",
     )
     print(f"24h PM2.5 avg: {history.avgValue}")
 
@@ -71,30 +60,20 @@ asyncio.run(main())
 
 ### Methods
 
-| Method | Params Type | Returns | Description |
+All methods take keyword-only arguments. No `*Params` objects needed.
+
+| Method | Keyword Args | Returns | Description |
 |--------|-------------|---------|-------------|
 | `get_ip_details()` | — | `IPDetails` | Get location from your IP address |
-| `get_nearest_location(params)` | `GetNearestLocationParams` | `list[Station]` | Get nearest monitoring stations by coordinates |
-| `get_location_by_slug(params)` | `GetLocationBySlugParams` | `list[LocationDetails]` | Get location details by slug |
-| `search(params)` | `SearchParams` | `SearchResults` | Search locations by name |
-| `get_last_12_hour_history(params)` | `GetHistoryParams` | `HistoryData` | Get 12-hour sensor history |
-| `get_last_24_hour_history(params)` | `GetHistoryParams` | `HistoryDataWithWHO` | Get 24-hour history with WHO guidelines |
-| `get_last_7_days_history(params)` | `GetHistoryParams` | `HistoryDataWithWHO` | Get 7-day sensor history |
-| `get_last_30_days_history(params)` | `GetHistoryParams` | `HistoryDataWithWHO` | Get 30-day sensor history |
-| `get_rankings(params)` | `GetRankingParams` | `list[RankingEntry]` | Get city or country pollution rankings |
+| `get_nearest_location(**kwargs)` | `lat`, `long`, `type?` | `list[Station]` | Get nearest monitoring stations by coordinates |
+| `get_location_by_slug(**kwargs)` | `slug`, `type?` | `list[LocationDetails]` | Get location details by slug |
+| `search(**kwargs)` | `search_string` | `SearchResults` | Search locations by name |
+| `get_last_12_hour_history(**kwargs)` | `slug`, `sensorname`, `slug_type` | `HistoryData` | Get 12-hour sensor history |
+| `get_last_24_hour_history(**kwargs)` | `slug`, `sensorname`, `slug_type` | `HistoryDataWithWHO` | Get 24-hour history with WHO guidelines |
+| `get_last_7_days_history(**kwargs)` | `slug`, `sensorname`, `slug_type` | `HistoryDataWithWHO` | Get 7-day sensor history |
+| `get_last_30_days_history(**kwargs)` | `slug`, `sensorname`, `slug_type` | `HistoryDataWithWHO` | Get 30-day sensor history |
+| `get_rankings(**kwargs)` | `sensorname`, `type`, `limit=10` | `list[RankingEntry]` | Get city or country pollution rankings |
 | `close()` | — | `None` | Close the underlying HTTP client |
-
-### Param Classes
-
-```python
-from aqi_in_api import (
-    GetNearestLocationParams,  # lat: float, long: float, type: LocationType | None
-    GetLocationBySlugParams,   # slug: str, type: SlugType | None
-    SearchParams,              # searchString: str
-    GetHistoryParams,          # slug: str, sensorname: SensorName, slugType: SearchType
-    GetRankingParams,          # sensorname: SensorName, type: RankType, limit: int = 10
-)
-```
 
 ### Types
 
