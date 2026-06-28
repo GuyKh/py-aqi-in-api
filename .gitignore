@@ -25,3 +25,6 @@ coverage/
 
 # Environment
 .env
+
+# Local tooling
+token-optimizer/
