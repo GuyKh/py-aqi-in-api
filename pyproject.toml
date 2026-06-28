@@ -1,5 +1,5 @@
 [project]
-name = "py-aqi-in-api"
+name = "aqi-in-api"
 version = "0.1.0"
 description = "Python SDK for the AQI.in Air Quality API"
 readme = "README.md"
