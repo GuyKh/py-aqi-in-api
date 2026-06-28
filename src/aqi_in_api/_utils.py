@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from urllib.parse import urlencode, urljoin
 
 from aqi_in_api.models import SlugType
@@ -6,7 +7,7 @@ from aqi_in_api.models import SlugType
 def build_url(
     base_url: str,
     endpoint: str,
-    params: dict[str, str | int | None] | None = None,
+    params: Mapping[str, str | int | float | None] | None = None,
 ) -> str:
     """Build a URL from base, endpoint, and query parameters.
 

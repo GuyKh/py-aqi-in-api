@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 import pytest
+import pytest_httpx
 
 from aqi_in_api import AQIClient, AQIException, ClientConfig, create_aqi_client
 
@@ -34,7 +35,7 @@ class TestCreateAQIClient:
 
 
 class TestAQIClient:
-    async def test_uses_default_base_url(self, httpx_mock) -> None:
+    async def test_uses_default_base_url(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(json={"status": "success", "data": IP_DETAILS_MOCK})
         client = AQIClient()
         result = await client.get_ip_details()
@@ -42,21 +43,21 @@ class TestAQIClient:
         request = httpx_mock.get_requests()[0]
         assert str(request.url).startswith("https://apiserver.aqi.in")
 
-    async def test_uses_custom_base_url(self, httpx_mock) -> None:
+    async def test_uses_custom_base_url(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(json={"status": "success", "data": IP_DETAILS_MOCK})
         client = AQIClient(ClientConfig(base_url="https://custom.api.com"))
         await client.get_ip_details()
         request = httpx_mock.get_requests()[0]
         assert str(request.url).startswith("https://custom.api.com")
 
-    async def test_uses_custom_token(self, httpx_mock) -> None:
+    async def test_uses_custom_token(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(json={"status": "success", "data": IP_DETAILS_MOCK})
         client = AQIClient(ClientConfig(token="my-token"))
         await client.get_ip_details()
         request = httpx_mock.get_requests()[0]
         assert request.headers.get("authorization") == "bearer my-token"
 
-    async def test_auto_generates_jwt_token(self, httpx_mock) -> None:
+    async def test_auto_generates_jwt_token(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(json={"status": "success", "data": IP_DETAILS_MOCK})
         client = AQIClient()
         await client.get_ip_details()
@@ -68,7 +69,7 @@ class TestAQIClient:
         assert payload["userID"] == 1
         assert payload["exp"] is not None
 
-    async def test_token_expiry_is_7_days(self, httpx_mock) -> None:
+    async def test_token_expiry_is_7_days(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(json={"status": "success", "data": IP_DETAILS_MOCK})
         client = AQIClient()
         await client.get_ip_details()
@@ -81,14 +82,14 @@ class TestAQIClient:
         )
         assert actual_duration == expected_duration
 
-    async def test_raises_on_http_error(self, httpx_mock) -> None:
+    async def test_raises_on_http_error(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(status_code=404, text="Not Found")
         client = AQIClient()
         with pytest.raises(AQIException) as exc:
             await client.get_ip_details()
         assert exc.value.status_code == 404
 
-    async def test_raises_on_failed_status(self, httpx_mock) -> None:
+    async def test_raises_on_failed_status(self, httpx_mock: pytest_httpx.HTTPXMock) -> None:
         httpx_mock.add_response(
             json={"status": "failed", "message": "Invalid request", "status_code": 400}
         )

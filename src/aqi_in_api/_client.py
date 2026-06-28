@@ -64,7 +64,7 @@ def _convert_value(field_type: object, value: Any) -> Any:
         return tuple(_convert_value(args[i], v) for i, v in enumerate(value[: len(args)]))
     try:
         if isinstance(value, dict) and dataclasses.is_dataclass(field_type):
-            return _from_dict(field_type, value)
+            return _from_dict(field_type, value)  # type: ignore[arg-type]
     except TypeError:
         pass
     return value
@@ -95,7 +95,7 @@ class AQIClient:
     async def _request(
         self,
         endpoint: str,
-        params: dict[str, str | int | None] | None = None,
+        params: dict[str, str | int | float | None] | None = None,
     ) -> Any:
         url = build_url(self._base_url, endpoint, params)
         token = await self._get_token()
@@ -140,7 +140,7 @@ class AQIClient:
             ENDPOINTS["NEAREST_LOCATION"],
             {"lat": lat, "long": long, "type": "2" if type == "city" else "1"},
         )
-        return _to_model(Station, data)
+        return _to_model(Station, data)  # type: ignore[no-any-return]
 
     async def get_location_by_slug(
         self,
@@ -155,7 +155,7 @@ class AQIClient:
                 "type": type if type is not None else get_slug_depth(slug),
             },
         )
-        return _to_model(LocationDetails, data)
+        return _to_model(LocationDetails, data)  # type: ignore[no-any-return]
 
     async def search(self, *, search_string: str) -> SearchResults:
         data = await self._request(ENDPOINTS["SEARCH"], {"searchString": search_string})
@@ -228,7 +228,7 @@ class AQIClient:
                 "limit": limit,
             },
         )
-        return _to_model(RankingEntry, data)
+        return _to_model(RankingEntry, data)  # type: ignore[no-any-return]
 
     async def close(self) -> None:
         await self._http.aclose()
