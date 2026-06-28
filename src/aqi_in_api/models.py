@@ -227,35 +227,3 @@ class RankingEntry:
     pm25: float | None = None
     pm10: float | None = None
     aqi: float | None = None
-
-
-@dataclass(frozen=True)
-class GetNearestLocationParams:
-    lat: float
-    long: float
-    type: LocationType | None = None
-
-
-@dataclass(frozen=True)
-class GetLocationBySlugParams:
-    slug: str
-    type: SlugType | None = None
-
-
-@dataclass(frozen=True)
-class SearchParams:
-    searchString: str
-
-
-@dataclass(frozen=True)
-class GetHistoryParams:
-    slug: str
-    sensorname: SensorName
-    slugType: SearchType
-
-
-@dataclass(frozen=True)
-class GetRankingParams:
-    sensorname: SensorName
-    type: RankType
-    limit: int = 10

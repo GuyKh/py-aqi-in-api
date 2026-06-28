@@ -12,17 +12,17 @@ from aqi_in_api._exceptions import AQIException
 from aqi_in_api._token import generate_token
 from aqi_in_api._utils import build_url, get_slug_depth
 from aqi_in_api.models import (
-    GetHistoryParams,
-    GetLocationBySlugParams,
-    GetNearestLocationParams,
-    GetRankingParams,
     HistoryData,
     HistoryDataWithWHO,
     IPDetails,
     LocationDetails,
+    LocationType,
     RankingEntry,
-    SearchParams,
+    RankType,
     SearchResults,
+    SearchType,
+    SensorName,
+    SlugType,
     Station,
 )
 
@@ -129,62 +129,103 @@ class AQIClient:
         data = await self._request(ENDPOINTS["IP_DETAILS"])
         return _from_dict(IPDetails, data)
 
-    async def get_nearest_location(self, params: GetNearestLocationParams) -> list[Station]:
+    async def get_nearest_location(
+        self,
+        *,
+        lat: float,
+        long: float,
+        type: LocationType | None = None,
+    ) -> list[Station]:
         data = await self._request(
             ENDPOINTS["NEAREST_LOCATION"],
-            {"lat": params.lat, "long": params.long, "type": "2" if params.type == "city" else "1"},
+            {"lat": lat, "long": long, "type": "2" if type == "city" else "1"},
         )
         return _to_model(Station, data)
 
-    async def get_location_by_slug(self, params: GetLocationBySlugParams) -> list[LocationDetails]:
+    async def get_location_by_slug(
+        self,
+        *,
+        slug: str,
+        type: SlugType | None = None,
+    ) -> list[LocationDetails]:
         data = await self._request(
             ENDPOINTS["LOCATION_BY_SLUG"],
             {
-                "slug": params.slug,
-                "type": params.type if params.type is not None else get_slug_depth(params.slug),
+                "slug": slug,
+                "type": type if type is not None else get_slug_depth(slug),
             },
         )
         return _to_model(LocationDetails, data)
 
-    async def search(self, params: SearchParams) -> SearchResults:
-        data = await self._request(ENDPOINTS["SEARCH"], {"searchString": params.searchString})
+    async def search(self, *, search_string: str) -> SearchResults:
+        data = await self._request(ENDPOINTS["SEARCH"], {"searchString": search_string})
         return _from_dict(SearchResults, data)
 
-    async def get_last_12_hour_history(self, params: GetHistoryParams) -> HistoryData:
+    async def get_last_12_hour_history(
+        self,
+        *,
+        slug: str,
+        sensorname: SensorName,
+        slug_type: SearchType,
+    ) -> HistoryData:
         data = await self._request(
             ENDPOINTS["HISTORY_12H"],
-            {"slug": params.slug, "sensorname": params.sensorname, "slugType": params.slugType},
+            {"slug": slug, "sensorname": sensorname, "slugType": slug_type},
         )
         return _from_dict(HistoryData, data)
 
-    async def get_last_24_hour_history(self, params: GetHistoryParams) -> HistoryDataWithWHO:
+    async def get_last_24_hour_history(
+        self,
+        *,
+        slug: str,
+        sensorname: SensorName,
+        slug_type: SearchType,
+    ) -> HistoryDataWithWHO:
         data = await self._request(
             ENDPOINTS["HISTORY_24H"],
-            {"slug": params.slug, "sensorname": params.sensorname, "slugType": params.slugType},
+            {"slug": slug, "sensorname": sensorname, "slugType": slug_type},
         )
         return _from_dict(HistoryDataWithWHO, data)
 
-    async def get_last_7_days_history(self, params: GetHistoryParams) -> HistoryDataWithWHO:
+    async def get_last_7_days_history(
+        self,
+        *,
+        slug: str,
+        sensorname: SensorName,
+        slug_type: SearchType,
+    ) -> HistoryDataWithWHO:
         data = await self._request(
             ENDPOINTS["HISTORY_7D"],
-            {"slug": params.slug, "sensorname": params.sensorname, "slugType": params.slugType},
+            {"slug": slug, "sensorname": sensorname, "slugType": slug_type},
         )
         return _from_dict(HistoryDataWithWHO, data)
 
-    async def get_last_30_days_history(self, params: GetHistoryParams) -> HistoryDataWithWHO:
+    async def get_last_30_days_history(
+        self,
+        *,
+        slug: str,
+        sensorname: SensorName,
+        slug_type: SearchType,
+    ) -> HistoryDataWithWHO:
         data = await self._request(
             ENDPOINTS["HISTORY_30D"],
-            {"slug": params.slug, "sensorname": params.sensorname, "slugType": params.slugType},
+            {"slug": slug, "sensorname": sensorname, "slugType": slug_type},
         )
         return _from_dict(HistoryDataWithWHO, data)
 
-    async def get_rankings(self, params: GetRankingParams) -> list[RankingEntry]:
+    async def get_rankings(
+        self,
+        *,
+        sensorname: SensorName,
+        type: RankType,
+        limit: int = 10,
+    ) -> list[RankingEntry]:
         data = await self._request(
             ENDPOINTS["RANKINGS"],
             {
-                "sensorname": params.sensorname,
-                "type": "1" if params.type == "country" else "2",
-                "limit": params.limit,
+                "sensorname": sensorname,
+                "type": "1" if type == "country" else "2",
+                "limit": limit,
             },
         )
         return _to_model(RankingEntry, data)
