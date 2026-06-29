@@ -2,7 +2,7 @@ import time
 
 import jwt
 
-JWT_SECRET = "masai"
+JWT_SECRET = "masai"  # nosec B105 — intentionally replicating TS SDK behavior
 TOKEN_EXPIRY_SECONDS = 7 * 24 * 60 * 60
 
 

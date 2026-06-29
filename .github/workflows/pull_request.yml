@@ -64,3 +64,23 @@ jobs:
 
       - name: Running Mypy
         run: uv run --with mypy python3 -m mypy src/ tests/ --follow-untyped-imports --explicit-package-bases --check-untyped-defs
+
+  bandit:
+    name: "Security Scan (Bandit)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Running Bandit
+        run: uv run bandit -r src/
