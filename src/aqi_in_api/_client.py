@@ -83,7 +83,7 @@ class AQIClient:
         self._custom_token = config.token
         self._user_agent = config.user_agent
         self._cached_token: str | None = None
-        self._http = httpx.AsyncClient()
+        self._http = httpx.AsyncClient(timeout=30.0)
 
     async def _get_token(self) -> str:
         if self._custom_token is not None:

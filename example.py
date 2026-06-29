@@ -34,5 +34,7 @@ async def main() -> None:
     )
     print(history_30_days)
 
+    await client.close()
+
 
 asyncio.run(main())

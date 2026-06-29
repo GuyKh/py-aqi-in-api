@@ -9,6 +9,31 @@ LocationType = Literal["station", "city"]
 SlugType = Literal[1, 2, 3, 4]
 RankType = Literal["city", "country"]
 
+__all__ = [
+    "IAQI",
+    "BaseLocation",
+    "City",
+    "Country",
+    "HistoryData",
+    "HistoryDataWithWHO",
+    "IPDetails",
+    "LocationDetails",
+    "LocationType",
+    "RankType",
+    "RankingEntry",
+    "SearchResults",
+    "SearchType",
+    "SensorName",
+    "SlugType",
+    "State",
+    "Station",
+    "UVCondition",
+    "WHOGuideData",
+    "Weather",
+    "WeatherCondition",
+    "WeatherSimple",
+]
+
 
 @dataclass(frozen=True)
 class IAQI:
