@@ -1,4 +1,4 @@
-# py-aqi-in-api
+# aqi-in-api
 
 Python SDK for the [AQI.in](https://aqi.in) Air Quality API.
 
@@ -9,7 +9,7 @@ Fully typed, async, using modern Python (3.11+), dataclasses, and httpx.
 ## Installation
 
 ```bash
-pip install py-aqi-in-api
+pip install aqi-in-api
 ```
 
 Requires Python 3.11+.
