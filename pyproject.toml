@@ -59,4 +59,5 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "pytest-httpx>=0.36.2",
     "ruff>=0.15.20",
+    "bandit>=1.9.4",
 ]
